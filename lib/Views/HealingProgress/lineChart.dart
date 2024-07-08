@@ -14,12 +14,15 @@ class LineChartWidget extends StatelessWidget {
       aspectRatio: 1.5,
       child: LineChart(
         LineChartData(
+          backgroundColor: Color.fromARGB(255, 158, 255, 206),
           lineBarsData: [
             LineChartBarData(
               spots: points
                   .map((point) => FlSpot(point.x.millisecondsSinceEpoch.toDouble(), point.y))
                   .toList(),
-              isCurved: false,
+              color: const Color.fromARGB(255, 251, 132, 124),
+              isCurved: true,
+              preventCurveOverShooting: true,
               dotData: FlDotData(show: true),
             ),
           ],
@@ -40,7 +43,7 @@ class LineChartWidget extends StatelessWidget {
                 showTitles: true,
                 getTitlesWidget: (value, meta) {
                   final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
-                  return Text(DateFormat('dd/MM/yyyy').format(date), style: TextStyle(color: Colors.black, fontSize: 12));
+                  return Text(DateFormat('dd/MM/yy').format(date), style: TextStyle(color: Colors.black, fontSize: 12));
                 },
                 reservedSize: 22,
               

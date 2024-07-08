@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:pentacode/Views/Dashboard/DashboardScreen.dart';
+import 'package:pentacode/Views/Dashboard/DashboardScreendoctor.dart';
 import 'package:pentacode/Views/Home/HomeScreen.dart';
 import 'package:pentacode/Views/SignInWithEmail/SignInWithEmail.dart';
 import 'package:pentacode/configs/CommonFunctions.dart';
@@ -27,31 +28,39 @@ class LoginController extends GetxController {
   }
 
   Future<void> onPressLogin() async {
-    if (ctrUserName.text.isEmpty) {
-      Get.snackbar('Login Failed', 'Please Enter the Username');
-    } else if (ctrPassword.text.isEmpty) {
-      Get.snackbar('Login Failed', 'Please Enter the Password');
-    } else {
-      debugPrint('Checking User..');
+  if (ctrUserName.text.isEmpty) {
+    Get.snackbar('Login Failed', 'Please Enter the Username');
+  } else if (ctrPassword.text.isEmpty) {
+    Get.snackbar('Login Failed', 'Please Enter the Password');
+  } else {
+    debugPrint('Checking User..');
 
-      await API_LoginVerify(
-          false, ctrUserName.text.trim(), ctrPassword.text.trim(),
-          (success, data, message) async {
-        debugPrint(
-            'Login Verify Success: $success   Message: $message  Data: $data');
+    await API_LoginVerify(
+      false, ctrUserName.text.trim(), ctrPassword.text.trim(),
+      (success, data, message) async {
+        debugPrint('Login Verify Success: $success   Message: $message  Data: $data');
         if (success) {
           SetSharedPref(1, Constants.KEY_ACCESSTOKEN, data['token']);
-          SetSharedPref(
-              1, Constants.KEY_MEMBER_DATA, jsonEncode(data['loggedUser']));
+          SetSharedPref(1, Constants.KEY_MEMBER_DATA, jsonEncode(data['loggedUser']));
           print('Login Success');
-          Get.to(const HomeScreen());
+
+          String role = data['loggedUser']['role']; // Assuming 'role' is a field in the user data
+
+          if (role == 'PATIENT') {
+            Get.to(const DashboardScreen());
+          } else if (role == 'DOCTOR') {
+            Get.to(const DashboardScreendoctor());
+          } else {
+            Get.snackbar('Login Failed', 'Unknown user type');
+          }
         } else {
           print('Login Failed');
           Get.snackbar('Login Failed', message);
         }
-      });
-    }
+      }
+    );
   }
+}
 
   Future<void> onLogout() async {
     await API_Logout((success, data, message) async {
